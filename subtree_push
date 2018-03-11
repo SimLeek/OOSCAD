@@ -1,0 +1,2 @@
+git remote add pygp_util https://github.com/SimLeek/PyGPUtil.git
+git subtree add --prefix=pygp_util pygp_util master
