@@ -8,12 +8,6 @@ import time
 
 if False:
     from typing import Tuple
-"""def read_in_file(*shader_file):
-    '''shader_file = open(script_dir+os.sep+os.sep.join(shader_file))
-    shader_text = shader_file.read()
-    shader_file.close()'''
-
-    return shader_text"""
 
 my_dir = os.path.dirname(os.path.abspath(__file__))
 shader_dir = my_dir + os.sep + 'shaders'
