@@ -42,7 +42,7 @@ def get_sphere_coordinates(
         sphere_equation="1.0",
 
         max_r="FLT_MAX",
-        min_r="FLT_MIN",
+        min_r="-FLT_MAX",
 
         phi_start=0,
         phi_end=m.pi,
@@ -52,7 +52,7 @@ def get_sphere_coordinates(
         theta_end=2*m.pi,
         theta_inc=m.pi/(2.0**5),
 
-        num_points = 65536,
+        num_points = -1,
 
         gpu=0
 ):  # type: (...)->Callable[List[Any], None]
@@ -64,13 +64,22 @@ def get_sphere_coordinates(
         gpu=0
     )
 
+    if num_points==-1:
+        num_points = int(m.ceil(max((phi_end-phi_start)/phi_inc, (theta_end-theta_start)/theta_inc)))
+        if num_points<0:
+            raise ValueError("Incorrect angle incrementation sign. Please match direction of start:end.")
+
     coords_np = np.zeros((num_points*3,), dtype=np.float64)
     coords_buf = cl.Buffer(p.ctx, p.mf.WRITE_ONLY, coords_np.nbytes)
 
     vtk_v_np = np.zeros((num_points*2 ,), dtype=np.int64)
     vtk_v_buf = cl.Buffer(p.ctx, p.mf.WRITE_ONLY, vtk_v_np.nbytes)
 
-    p.build.sphere_points(p.queue, (num_points,), (64,), coords_buf, vtk_v_buf)
+    local_size = 64
+
+    global_size = num_points + local_size - num_points%local_size - (local_size if num_points%local_size==0 else 0)
+
+    p.build.sphere_points(p.queue, (global_size,), (local_size,), coords_buf, vtk_v_buf)
 
     cl.enqueue_copy(p.queue, coords_np, coords_buf).wait()
     cl.enqueue_copy(p.queue, vtk_v_np, vtk_v_buf).wait()

@@ -9,14 +9,10 @@ class MockModel(object):
 
     def batch_points(self, array_in):
         vtk_point_data = numpy_support.numpy_to_vtk(array_in, deep=True, array_type=vtk.VTK_FLOAT)
-        #self.points.DeepCopy(vtk_point_data)
         self.points.SetData(vtk_point_data)
 
     def batch_vertices(self, array_in):
         vtk_vertex_data = numpy_support.numpy_to_vtkIdTypeArray(array_in, deep=True)
-        #self.vertices.SetNumberOfCells(int(len(vtk_vertex_data)/2))
-        #self.vertices.UpdateCellCount(int(len(array_in)/2))
-        #self.vertices.DeepCopy(vtk_vertex_data)
         self.vertices.SetCells(int(len(array_in)/2),vtk_vertex_data)
 
     def show_cloud(self):

@@ -29,8 +29,8 @@ __kernel void sphere_points(
 ){{
     long pos = get_global_id(0);
 
-    double phi = fmod(phi_start + pos*phi_inc, phi_end);
-    double theta = fmod(theta_start + pos*theta_inc, theta_end);
+    double phi = fmod(phi_start + (pos)*phi_inc, phi_end);
+    double theta = fmod(theta_start + (pos)*theta_inc, theta_end);
 
     double4 xyzn = get_coordinates(phi, theta);
 
@@ -39,5 +39,5 @@ __kernel void sphere_points(
     coordinate_array[pos*3+2] = xyzn.z;
 
     vtk_vert_array[pos*2]=1;
-    vtk_vert_array[pos*2+1]=pos+1;
+    vtk_vert_array[pos*2+1]=pos;
 }}
